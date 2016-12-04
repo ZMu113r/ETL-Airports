@@ -53,6 +53,7 @@ typedef struct AVLtree {
 AVLtree *parseLine(char *line, airPdata *apd, hashTable *HTarray, AVLtree *currentAVLNode, int *depth);
 float sexag2decimal(char *degreeString); 
 lListAirPdata *populateList(airPdata *apd, lListAirPdata *oldNode);
+void printData(int length, airPdata *apd);
 
 //Functions used to sort by latitude
 //AVLtree *sortByLatitude(AVLtree *currentAVLNode, lListAirPdata *currentNode);
@@ -64,7 +65,6 @@ AVLtree *leftRotate(AVLtree *Node);
 AVLtree *rightRotate(AVLtree *Node);
 int getseqNumber(int seqNumber);
 void displayAVLtreeinOrder(AVLtree *currentAVLNode, int *seqNumber); 
-void printData(int length, airPdata *apd);
 
 //functions used to sort alphabetically
 hashTable *insertHashValue(hashTable *HTarray, lListAirPdata *currentNode);
@@ -98,7 +98,7 @@ int main (int argc, char *argv[]) {
 	} 
 	else{
 
-		printf("Incorect number of input parameters. Please specify the name of the input file and sort parameter.\n");
+		printf("Incorect number of input parameters. Please specify the name of the input file and sort parameter(latitude <n>, or alphabetically <a>).\n");
 		printf("Syntax: ./hw1ecl.exe [input file][Sort parameter]\n"); 
 		return 1;
 	}
@@ -118,11 +118,11 @@ int main (int argc, char *argv[]) {
 		printf("Memory allocation for airPdata array failed. Aborting.\n"); return 2;
 	}
 
+	//Create return structs
 	hashTable *HTarray = (hashTable *)malloc(sizeof(hashTable) * 26);
-	AVLtree *currentAVLNode = NULL; /*(AVLtree *)malloc(sizeof(AVLtree));
-	currentAVLNode->data = (airPdata *)malloc(sizeof(airPdata));
-	currentAVLNode->data = NULL;*/
+	AVLtree *currentAVLNode = NULL; 
 
+	//Pointer for height/depth calculation
 	int *depth = (int *)malloc(sizeof(int));
 	*depth = 0;
 
@@ -164,7 +164,7 @@ int main (int argc, char *argv[]) {
 	else if(*choice == 'n' || *choice == 'N') {
 		//Display South -> North
 		printf("seqNumber,code,name,city,lat,lon\n");
-		//*seqNumber = getseqNumber(*seqNumber);
+		
 		displayAVLtreeinOrder(currentAVLNode, seqNumber);
 	}
 	else {
@@ -224,8 +224,7 @@ AVLtree *parseLine(char *line, airPdata *apd, hashTable *HTarray, AVLtree *curre
                 //Check for Helipads1
                 /* Flag didn't work on Eustis, fixed by returning AVLNode instead of setting flag */
   				if(((line+j)[0] - '0' <= 9 && (line+j)[0] - '0' >= 0) || ((line+j)[2] - '0' <= 9 && (line+j)[2] - '0' >= 0)) {
-  					foundHelipad = 1;
-  					break;
+  					return currentAVLNode;
   				}
                 strncpy(apd->LocID, line+j, i-j+1);  
 
